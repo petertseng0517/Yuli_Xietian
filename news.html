@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>活動消息｜玉里協天宮</title>
+  <meta name="description" content="玉里協天宮活動消息詳細內容">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Serif+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/news-detail.css">
+</head>
+<body class="news-page">
+
+  <!-- Header (simplified, no hero) -->
+  <header id="site-header" class="scrolled">
+    <nav class="nav-inner">
+      <a class="nav-logo" href="index.html">
+        玉里協天宮
+        <span>Yuli Xietian Temple</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html#about">廟宇介紹</a></li>
+        <li><a href="index.html#deity">主神簡介</a></li>
+        <li><a href="index.html#news">活動消息</a></li>
+        <li><a href="index.html#schedule">祭祀時間</a></li>
+        <li><a href="index.html#access">交通資訊</a></li>
+      </ul>
+      <button class="nav-toggle" aria-label="開啟選單" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile overlay -->
+  <nav class="nav-overlay" aria-label="手機選單">
+    <a href="index.html#about">廟宇介紹</a>
+    <a href="index.html#deity">主神簡介</a>
+    <a href="index.html#news">活動消息</a>
+    <a href="index.html#schedule">祭祀時間</a>
+    <a href="index.html#access">交通資訊</a>
+  </nav>
+
+  <!-- Main content -->
+  <main id="news-detail">
+    <div class="nd-container">
+
+      <!-- Breadcrumb -->
+      <nav class="nd-breadcrumb" aria-label="目前位置">
+        <a href="index.html">首頁</a>
+        <span aria-hidden="true">／</span>
+        <a href="index.html#news">活動消息</a>
+        <span aria-hidden="true">／</span>
+        <span id="nd-breadcrumb-title">載入中</span>
+      </nav>
+
+      <!-- Article -->
+      <article id="nd-article" class="nd-article">
+        <div class="nd-loading">載入中…</div>
+      </article>
+
+      <!-- Back link -->
+      <div class="nd-back">
+        <a href="index.html#news" class="nd-back-link">
+          <span aria-hidden="true">←</span> 返回活動消息
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <p class="footer-name">玉里協天宮</p>
+      <p class="footer-address">花蓮縣玉里鎮民生街 52 巷 13 號　開放時間 06:30 – 22:00</p>
+      <p class="footer-copy">© 玉里協天宮　版權所有　創建於清光緒元年（1875）</p>
+    </div>
+    <a class="back-to-top" href="#" aria-label="回到頂端">↑</a>
+  </footer>
+
+  <script>
+  // ── Hamburger (same as main.js but inline for standalone page) ──
+  const toggle  = document.querySelector('.nav-toggle');
+  const overlay = document.querySelector('.nav-overlay');
+  toggle.addEventListener('click', () => {
+    const open = overlay.classList.toggle('open');
+    toggle.classList.toggle('active', open);
+    toggle.setAttribute('aria-expanded', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  overlay.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    overlay.classList.remove('open');
+    toggle.classList.remove('active');
+    toggle.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }));
+
+  // ── Load news detail ──
+  (async function () {
+    const params = new URLSearchParams(location.search);
+    const id     = parseInt(params.get('id'), 10);
+    const article = document.getElementById('nd-article');
+    const crumbTitle = document.getElementById('nd-breadcrumb-title');
+
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function formatDate(iso) {
+      const d = new Date(iso + 'T00:00:00');
+      return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+    }
+
+    if (!id) {
+      article.innerHTML = '<p class="nd-error">找不到指定消息。</p>';
+      return;
+    }
+
+    try {
+      const res  = await fetch('assets/data/news.json?v=' + Date.now());
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const post = (data.posts || []).find(p => parseInt(p.id) === id);
+
+      if (!post) {
+        article.innerHTML = '<p class="nd-error">找不到指定消息，可能已刪除。</p>';
+        crumbTitle.textContent = '找不到消息';
+        return;
+      }
+
+      // Update page title & breadcrumb
+      document.title = `${post.title}｜玉里協天宮`;
+      crumbTitle.textContent = post.title;
+
+      // Render content (newlines → paragraphs)
+      const content = (post.content || '').trim();
+      const contentHtml = content
+        ? content.split(/\n\n+/).map(p =>
+            `<p>${escHtml(p).replace(/\n/g, '<br>')}</p>`
+          ).join('')
+        : '';
+
+      // External link button (if set)
+      const linkHtml = post.link
+        ? `<a class="nd-ext-link" href="${escHtml(post.link)}" target="_blank" rel="noopener noreferrer">
+             查看更多詳情 →
+           </a>`
+        : '';
+
+      article.innerHTML = `
+        <header class="nd-header">
+          <div class="nd-label">活動消息</div>
+          <h1 class="nd-title">${escHtml(post.title)}</h1>
+          <time class="nd-date" datetime="${escHtml(post.date)}">${formatDate(post.date)}</time>
+          <div class="nd-divider"></div>
+        </header>
+        <div class="nd-body">
+          ${contentHtml || '<p class="nd-no-content">（本則消息暫無詳細內容）</p>'}
+        </div>
+        ${linkHtml}
+      `;
+    } catch {
+      article.innerHTML = '<p class="nd-error">消息載入失敗，請稍後再試。</p>';
+    }
+  })();
+  </script>
+
+</body>
+</html>

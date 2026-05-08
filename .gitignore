@@ -1,0 +1,5 @@
+.DS_Store
+Thumbs.db
+*.log
+# 密碼設定，不上傳 Git
+admin/config.php

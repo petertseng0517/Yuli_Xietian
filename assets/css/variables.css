@@ -1,0 +1,31 @@
+:root {
+  /* Colors */
+  --color-bg:        #0d0d0d;
+  --color-surface:   #1a1a1a;
+  --color-primary:   #8b0000;
+  --color-gold:      #c8960c;
+  --color-gold-lt:   #f0c040;
+  --color-text:      #e8e0d0;
+  --color-text-muted:#a09070;
+  --color-border:    rgba(200, 150, 12, 0.25);
+  --color-white:     #fdf8ef;
+  --color-dark-text: #2d1800;
+
+  /* Typography */
+  --font-serif:  'Noto Serif TC', 'Cormorant Garamond', serif;
+  --font-sans:   'Noto Sans TC', sans-serif;
+
+  --fs-hero:     clamp(2.5rem, 6vw, 5rem);
+  --fs-section:  clamp(1.5rem, 3vw, 2.2rem);
+  --fs-body:     1rem;
+  --fs-small:    0.875rem;
+
+  --lh-zh:       2;
+  --ls-title:    0.15em;
+  --ls-label:    0.25em;
+
+  /* Layout */
+  --section-padding: clamp(4rem, 8vw, 8rem) 1.5rem;
+  --container-max:   860px;
+  --transition:      0.6s ease;
+}
