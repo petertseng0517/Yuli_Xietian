@@ -86,8 +86,11 @@ function initHeroSlideshow() {
   const FADE_DURATION  = 1500;
   const KB_CLASSES     = ['kb-1', 'kb-2', 'kb-3'];
 
+  const isMobile = window.matchMedia('(max-width: 768px)');
   slides.forEach(s => {
-    const src = s.dataset.src;
+    const src = (isMobile.matches && s.dataset.srcMobile)
+      ? s.dataset.srcMobile
+      : s.dataset.src;
     if (src) s.style.backgroundImage = `url('${src}')`;
   });
 

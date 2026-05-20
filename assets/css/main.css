@@ -915,7 +915,7 @@ body {
 
   .deity-img-wrap img,
   .deity-img-wrap .img-placeholder {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 3 / 4;
     max-width: 300px;
     margin: 0 auto;
   }
